@@ -582,6 +582,15 @@ package body Sem_Specs is
             when Iir_Kind_Entity_Declaration =>
                Sem_Named_Entity_Chain (Get_Generic_Chain (Scope));
                Sem_Named_Entity_Chain (Get_Port_Chain (Scope));
+            when Iir_Kind_Architecture_Body =>
+               declare
+		  Entity : constant Iir := Get_Entity (Scope);
+               begin
+                  if Entity /= Null_Iir then
+                     Sem_Named_Entity_Chain (Get_Generic_Chain (Entity));
+                     Sem_Named_Entity_Chain (Get_Port_Chain (Entity));
+                  end if;
+               end;
             when Iir_Kind_Block_Statement =>
                declare
                   Header : constant Iir := Get_Block_Header (Scope);
