@@ -1,0 +1,103 @@
+* Local notes
+  The purpose of this fork is to track [[https://github.com/tgingold/ghdl][GHDL]], in particular for running
+  under macOS.
+
+** Ada/GNAT bootstrapping
+   For macOS it seems the only workable distribution of Ada/GNAT is from
+   [[http://libre.adacore.com/tools/gnat-gpl-edition/][Adacore]]. Once you have rebuilt GCC with Ada you can toss away Adacore.
+
+   A possible alternative would be to cross-compile GCC GNAT from Ubuntu.
+
+** Building with GCC 6.4.0
+   Pull development tree from [[https://github.com/mrohne/ghdl][Github]]:
+   #+BEGIN_SRC sh
+    cd /opt/gcc/ghdl
+    git pull
+    ./configure --with-gcc=/opt/gcc/gcc-6.4.0 --prefix=/opt/gcc/gcc-6.4.0
+    make copy-sources
+   #+END_SRC
+
+   Build GCC - need working Ada compiler for bootstrap
+   #+BEGIN_SRC sh
+     cd /opt/gcc/gcc-6.4.0/build
+     export PATH=/opt/gcc/gcc-4.9.3/bin:$PATH
+     ../configure --prefix=/opt/GCC/gcc-6.4.0 \
+   		    --disable-nls --disable-bootstrap --disable-lto \
+   		    --disable-multilib --disable-libssp --disable-libgomp \
+   		    --with-host-libstdcxx=-lstdc++ \
+   		    --enable-languages=c,c++,ada,fortran,vhdl
+     make -j4
+     make install
+   #+END_SRC
+
+   Finally compile and install libraries
+   #+BEGIN_SRC sh
+     cd /opt/gcc/ghdl
+     make ghdllib
+     make install
+   #+END_SRC
+
+* GHDL
+  :PROPERTIES:
+  :CUSTOM_ID: ghdl
+  :END:
+
+[[https://gitter.im/ghdl1/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge][chat on gitter]]
+
+This directory contains the sources of GHDL, the VHDL simulator.
+
+GHDL is not an interpreter: it generates machine code from your design,
+the only way for high speed simulation.
+
+GHDL fully supports IEEE 1076-1987, IEEE 1076-1993, IEE 1076-2002 and
+partially the 1076-2008 version of VHDL.
+
+Main features are: - available on Linux (x86 and x86-64), Windows and
+Mac OS x - handle very large designs like leon3/grlib. - can write
+waveforms to a vcd or fst file. - partial support of PSL - support vunit
+(https://vunit.github.io) - support OSVVM (http://osvvm.org) - support
+cocotb (https://github.com/potentialventures/cocotb) through the VPI
+interface
+
+GHDL is free software. See the file COPYING for copying permission. The
+manuals, and some of the runtime libraries, are under different terms;
+see the individual source files for details.
+
+Doc is available on https://ghdl.readthedocs.org/en/latest/index.html
+
+** Building GHDL (Short instructions)
+   :PROPERTIES:
+   :CUSTOM_ID: building-ghdl-short-instructions
+   :END:
+
+If you aren't on linux, see below for full instructions.
+
+You need GNAT GPL 2014 (or later) for x86 (32 or 64 bits). GNAT is the
+GNU Ada compiler and GNAT GPL is very easy to install (download
+anonymously from libre.adacore.com, untar and run the doinstall script).
+You also need zlib (for Debian or Ubuntu: install zlib1g-dev package).
+
+In the GHDL base directory, configure and build:
+
+#+BEGIN_SRC sh
+    $ ./configure --prefix=/usr/local
+    $ make
+#+END_SRC
+
+At that place, you can already use the 'ghdl\_mcode' built in the
+directory. You can also install GHDL (the executable is installed as
+'ghdl'):
+
+#+BEGIN_SRC sh
+    $ make install
+#+END_SRC
+
+That's all!
+
+** Build GHDL (Long instructions)
+   :PROPERTIES:
+   :CUSTOM_ID: build-ghdl-long-instructions
+   :END:
+
+See
+[[https://github.com/tgingold/ghdl/blob/master/BUILD.txt][BUILD.txt]]

@@ -584,7 +584,7 @@ package body Sem_Specs is
                Sem_Named_Entity_Chain (Get_Port_Chain (Scope));
             when Iir_Kind_Architecture_Body =>
                declare
-		  Entity : constant Iir := Get_Entity (Scope);
+                  Entity : constant Iir := Get_Entity (Scope);
                begin
                   if Entity /= Null_Iir then
                      Sem_Named_Entity_Chain (Get_Generic_Chain (Entity));
